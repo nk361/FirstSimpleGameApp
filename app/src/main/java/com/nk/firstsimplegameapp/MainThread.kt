@@ -6,7 +6,7 @@ import java.lang.Exception
 
 class MainThread constructor(surfaceHolder: SurfaceHolder, gamePanel: GamePanel) : Thread() {
     companion object {//put all static things in a companion object
-        const val MAX_FPS: Int = 30//this frame rate is a guess for 2D games on most phones
+        val MAX_FPS: Int = 30//this frame rate is a guess for 2D games on most phones
         var canvas: Canvas? = null
     }
     private var averageFPS: Double
@@ -19,38 +19,38 @@ class MainThread constructor(surfaceHolder: SurfaceHolder, gamePanel: GamePanel)
         }
 
     init {
-        averageFPS = 0.0
+        this.averageFPS = 0.0
         this.surfaceHolder = surfaceHolder
         this.gamePanel = gamePanel
-        running = true
+        this.running = true
     }
 
     override fun run() {
         var startTime: Long
-        var timeMillis: Long = 1_000 / MAX_FPS.toLong()
+        var timeMillis: Long = 1_000 / com.nk.firstsimplegameapp.MainThread.Companion.MAX_FPS.toLong()
         var waitTime: Long
         var frameCount: Int = 0
         var totalTime: Long = 0
-        val targetTime: Long = 1_000 / MAX_FPS.toLong()
+        var targetTime: Long = 1_000 / com.nk.firstsimplegameapp.MainThread.Companion.MAX_FPS.toLong()
 
-        while(running) {
+        while(this.running) {
             startTime = System.nanoTime()//more precise than millisecond time, but more taxing on the phone
-            canvas = null
+            com.nk.firstsimplegameapp.MainThread.Companion.canvas = null
 
             try {
-                canvas = this.surfaceHolder.lockCanvas()
-                synchronized(surfaceHolder) {
+                com.nk.firstsimplegameapp.MainThread.Companion.canvas = this.surfaceHolder.lockCanvas()
+                synchronized(this.surfaceHolder) {
                     this.gamePanel.update()
-                    this.gamePanel.draw(canvas)
+                    this.gamePanel.draw(com.nk.firstsimplegameapp.MainThread.Companion.canvas)
                 }
             }
             catch(e: Exception) {
                 e.printStackTrace()
             }
-            finally {
-                if(canvas != null)
+            finally {//this happens no matter what after a try or catch block happen
+                if(com.nk.firstsimplegameapp.MainThread.Companion.canvas != null)
                     try {
-                        surfaceHolder.unlockCanvasAndPost(canvas)
+                        this.surfaceHolder.unlockCanvasAndPost(com.nk.firstsimplegameapp.MainThread.Companion.canvas)
                     }
                     catch(e: Exception) {
                         e.printStackTrace()
@@ -72,11 +72,11 @@ class MainThread constructor(surfaceHolder: SurfaceHolder, gamePanel: GamePanel)
             totalTime += System.nanoTime() - startTime
             frameCount++
 
-            if(frameCount == MAX_FPS) {
-                averageFPS = 1_000 / (totalTime / frameCount / 1_000_000).toDouble()
+            if(frameCount == com.nk.firstsimplegameapp.MainThread.Companion.MAX_FPS) {
+                this.averageFPS = 1_000 / (totalTime / frameCount / 1_000_000).toDouble()
                 frameCount = 0
                 totalTime = 0
-                println(averageFPS)
+                println(this.averageFPS)
             }
         }
     }
