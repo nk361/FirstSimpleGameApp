@@ -27,30 +27,30 @@ class MainThread constructor(surfaceHolder: SurfaceHolder, gamePanel: GamePanel)
 
     override fun run() {
         var startTime: Long
-        var timeMillis: Long = 1_000 / com.nk.firstsimplegameapp.MainThread.Companion.MAX_FPS.toLong()
+        var timeMillis: Long = 1_000 / MAX_FPS.toLong()
         var waitTime: Long
         var frameCount: Int = 0
         var totalTime: Long = 0
-        var targetTime: Long = 1_000 / com.nk.firstsimplegameapp.MainThread.Companion.MAX_FPS.toLong()
+        var targetTime: Long = 1_000 / MAX_FPS.toLong()
 
         while(this.running) {
             startTime = System.nanoTime()//more precise than millisecond time, but more taxing on the phone
-            com.nk.firstsimplegameapp.MainThread.Companion.canvas = null
+            canvas = null
 
             try {
-                com.nk.firstsimplegameapp.MainThread.Companion.canvas = this.surfaceHolder.lockCanvas()
+                canvas = this.surfaceHolder.lockCanvas()
                 synchronized(this.surfaceHolder) {
                     this.gamePanel.update()
-                    this.gamePanel.draw(com.nk.firstsimplegameapp.MainThread.Companion.canvas)
+                    this.gamePanel.draw(canvas)
                 }
             }
             catch(e: Exception) {
                 e.printStackTrace()
             }
             finally {//this happens no matter what after a try or catch block happen
-                if(com.nk.firstsimplegameapp.MainThread.Companion.canvas != null)
+                if(canvas != null)
                     try {
-                        this.surfaceHolder.unlockCanvasAndPost(com.nk.firstsimplegameapp.MainThread.Companion.canvas)
+                        this.surfaceHolder.unlockCanvasAndPost(canvas)
                     }
                     catch(e: Exception) {
                         e.printStackTrace()
@@ -72,7 +72,7 @@ class MainThread constructor(surfaceHolder: SurfaceHolder, gamePanel: GamePanel)
             totalTime += System.nanoTime() - startTime
             frameCount++
 
-            if(frameCount == com.nk.firstsimplegameapp.MainThread.Companion.MAX_FPS) {
+            if(frameCount == MAX_FPS) {
                 this.averageFPS = 1_000 / (totalTime / frameCount / 1_000_000).toDouble()
                 frameCount = 0
                 totalTime = 0
